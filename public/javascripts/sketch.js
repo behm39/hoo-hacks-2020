@@ -29,6 +29,7 @@ function update() {
         others[i].update();
     }
     checkSwordCollision();
+    checkDamageCollision();
 }
 
 function render() {
@@ -43,8 +44,16 @@ function render() {
 
 function checkSwordCollision() {
     for (let i = 0; i < others.length; i++) {
-        if (player.swordHit(others[i])) {
+        if (player.swordsHit(others[i])) {
             handleSwordCollision(others[i]);
+        }
+    }
+}
+
+function checkDamageCollision() {
+    for (let i = 0; i < others.length; i++) {
+        if (player.swordHitMe(others[i])) {
+            handleDamageCollision(others[i]);
         }
     }
 }
@@ -57,6 +66,17 @@ function handleSwordCollision(enemy) {
     let bounceMag = abs(player.aVel) + abs(enemy.aVel);
 
     bounce.mult(bounceMag * 30); // tweak bounce mag
+    enemy.applyForce(bounce);
+    bounce.mult(-1);
+    player.applyForce(bounce);
+}
+
+function handleDamageCollision(enemy) {
+    // TODO: play hurt sound
+    let bounce = p5.Vector.sub(enemy.pos, player.pos);
+    bounce.normalize();
+
+    bounce.mult(10);
     enemy.applyForce(bounce);
     bounce.mult(-1);
     player.applyForce(bounce);

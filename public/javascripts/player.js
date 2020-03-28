@@ -2,7 +2,7 @@ class Player {
 
     constructor(x, y, immobile = false) {
         Player.SWORD_LEN = 60;
-        Player.R = 40;
+        Player.R = 20;
         this.pos = createVector(x, y);
         this.vel = createVector();
         this.acc = createVector();
@@ -45,10 +45,10 @@ class Player {
 
         fill(201);
         stroke(0);
-        ellipse(this.pos.x, this.pos.y, Player.R);
+        ellipse(this.pos.x, this.pos.y, Player.R * 2);
     }
 
-    swordHit(enemy) {
+    swordsHit(enemy) {
         let mySword = p5.Vector.fromAngle(this.angle);
         mySword.mult(Player.SWORD_LEN + Player.R);
         mySword.add(this.pos);
@@ -60,6 +60,13 @@ class Player {
         return lineSegmentIntersection(this.swordPrev, mySword, enemy.pos, theirSword) ||
             lineSegmentIntersection(this.pos, mySword, enemy.swordPrev, theirSword) ||
             lineSegmentIntersection(this.pos, mySword, enemy.pos, theirSword);
+    }
+
+    swordHitMe(enemy) {
+        let theirSword = p5.Vector.fromAngle(enemy.angle);
+        theirSword.mult(Player.SWORD_LEN + Player.R);
+        theirSword.add(enemy.pos);
+        return lineSegmentCircleIntersection(theirSword, enemy.pos, this.pos, Player.R);
     }
 
     _handleKeys() {

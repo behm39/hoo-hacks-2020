@@ -1,3 +1,55 @@
+function lineSegmentCircleIntersection(pt1, pt2, circPt, r) {
+    
+    let circlex = circPt.x;
+    let circley = circPt.y;
+    let radius = r;
+    let x1 = pt1.x;
+    let y1 = pt1.y
+    let x2 = pt2.x;
+    let y2 = pt2.y;
+
+	//Calculate change in x and y for the segment
+    let deltax = x2 - x1;
+    let deltay = y2 - y1;
+
+    //Set up our quadratic formula
+    let a = deltax * deltax + deltay * deltay;
+    let b = 2 * (deltax * (x1-circlex) + deltay * (y1 - circley));
+    let c = (x1 - circlex) * (x1 - circlex) + (y1 - circley) * (y1 - circley) - radius * radius;
+
+    //Check if there is a negative in the discriminant
+    let discriminant = b * b - 4 * a * c;
+    if (discriminant < 0) 
+        return false;
+
+    //Try both +- in the quadratic formula
+    let quad1 = (-b + Math.sqrt(discriminant))/(2 * a);
+    let quad2 = (-b - Math.sqrt(discriminant))/(2 * a);
+
+    //If the result is between 0 and 1, there is an intersection
+    if (quad1 >= 0 && quad1 <= 1) 
+        return true;
+    else if (quad2 >= 0 && quad2 <= 1) 
+        return true;
+    return false;
+
+    // pt1 = p5.Vector.sub(pt1, circPt);
+    // pt2 = p5.Vector.sub(pt2, circPt);
+
+    // let x0 = pt1.x;
+    // let x1 = pt2.x;
+    // let y0 = pt1.y;
+    // let y1 = pt2.y;
+
+    // let a = (x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0);
+    // let b = 2 * (x1 - x0) * x0 + 2 * (y1 - y0) * y0;
+    // let c = x0 * x0 + y0 * y0 - r * r;
+
+    // let t = (2 * c) / (-b + sqrt(b * b - 4 * a * c));
+    // return t >= 0 && t <= 1;
+}
+
+
 // all parameters are vectors
 function lineSegmentIntersection(p1, q1, p2, q2) {
     // Find the four orientations needed for general and 
