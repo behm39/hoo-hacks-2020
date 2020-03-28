@@ -13,6 +13,8 @@ class Player {
         this.swordPrev = p5.Vector.fromAngle(this.angle);
         this.swordPrev.mult(Player.SWORD_LEN + Player.R);
         this.swordPrev.add(this.pos);
+        this.health = 1;
+        this.immunityFrames = 0;
     }
 
     applyForce(force) {
@@ -33,19 +35,33 @@ class Player {
         this.pos.add(this.vel);
         this.acc.mult(0);
         this.vel.mult(0.9);
+        this.immunityFrames -= 1;
     }
 
-    draw() {
+    static Draw(angle, x, y, health) {
+        push();
+        translate(x, y);
+
+        fill(255, 0, 0);
+        const HEALTH_W = 60;
+        const HEALTH_Y_BUFFER = 20;
+        rect(-HEALTH_W / 2, -Player.R - HEALTH_Y_BUFFER, HEALTH_W, 8);
+
+        fill(0, 255, 0);
+        let healthWidth = map(health, 0, 1, 0, HEALTH_W);
+        healthWidth = constrain(healthWidth, 0, HEALTH_W);
+        rect(-HEALTH_W / 2, -Player.R - HEALTH_Y_BUFFER, healthWidth, 8);
+
         stroke(255);
         strokeWeight(4);
-        let sword = p5.Vector.fromAngle(this.angle);
+        let sword = p5.Vector.fromAngle(angle);
         sword.mult(Player.SWORD_LEN + Player.R);
-        sword.add(this.pos);
-        line(this.pos.x, this.pos.y, sword.x, sword.y);
+        line(0, 0, sword.x, sword.y);
 
         fill(201);
         stroke(0);
-        ellipse(this.pos.x, this.pos.y, Player.R * 2);
+        ellipse(0, 0, Player.R * 2);
+        pop();
     }
 
     swordsHit(enemy) {

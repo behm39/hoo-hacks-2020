@@ -6,6 +6,7 @@ function Player(id, x, y, angle) {
     this.dx = 0;
     this.dy = 0;
     this.da = 0;
+    this.health = 1;
 }
 
 function setupSocketIO(io) {
@@ -14,7 +15,7 @@ function setupSocketIO(io) {
         console.log('user connected');
 
         /**
-         * data: (x, y, angle, dx, dy, da)
+         * data: (x, y, angle, dx, dy, da, health)
          */
         socket.on('start', (data) => {
             console.log(`player started: ${data}`);
@@ -30,6 +31,7 @@ function setupSocketIO(io) {
                     players[i].dx = data.dx;
                     players[i].dy = data.dy;
                     players[i].da = data.da;
+                    players[i].health = data.health;
                 }
             }
         });

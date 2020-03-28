@@ -15,7 +15,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600);
-    player = new Player(width * 0.75, height / 2);
+    player = new Player(random(width), random(height));
     others = [];
     socket.emit('start', { x: player.pos.x, y: player.pos.y, angle: player.angle });
     socket.on('heartbeat', (data) => {
@@ -45,7 +45,8 @@ function update() {
         angle: player.angle,
         dx: player.vel.x,
         dy: player.vel.y,
-        da: player.aVel
+        da: player.aVel,
+        health: player.health
     });
 }
 
@@ -53,20 +54,10 @@ function render() {
     background(201);
 
     // line(player.pos.x, player.pos.y, mouseX, mouseY);
-    player.draw();
+    Player.Draw(player.angle, player.pos.x, player.pos.y, player.health);
     for (let i = 0; i < others.length; i++) {
         if (others[i].id != socket.id) {
-
-            stroke(255);
-            strokeWeight(4);
-            let sword = p5.Vector.fromAngle(others[i].angle);
-            sword.mult(Player.SWORD_LEN + Player.R);
-            sword.add(createVector(others[i].x, others[i].y));
-            line(others[i].x, others[i].y, sword.x, sword.y);
-
-            fill(201);
-            stroke(0);
-            ellipse(others[i].x, others[i].y, Player.R * 2);
+            Player.Draw(others[i].angle, others[i].x, others[i].y, others[i].health); // TODO: other health
         }
     }
 }
@@ -84,7 +75,7 @@ function checkSwordCollision() {
 function checkDamageCollision() {
     for (let i = 0; i < others.length; i++) {
         if (others[i].id != socket.id) {
-            if (player.swordHitMe(others[i])) {
+            if (player.immunityFrames <= 0 && player.swordHitMe(others[i])) {
                 handleDamageCollision(others[i]);
             }
         }
@@ -115,4 +106,14 @@ function handleDamageCollision(enemy) {
     // enemy.applyForce(bounce);
     bounce.mult(-1);
     player.applyForce(bounce);
+    player.health -= 0.35;
+    player.immunityFrames = 30;
+
+    if (player.health < 0) {
+        handleDeath();
+    }
+}
+
+function handleDeath() {
+    player = new Player(random(width), random(height));
 }
