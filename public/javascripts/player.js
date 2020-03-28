@@ -1,20 +1,32 @@
 class Player {
 
-    constructor(x, y) {
+    constructor(x, y, immobile = false) {
+        Player.SWORD_LEN = 60;
+        Player.R = 40;
         this.pos = createVector(x, y);
         this.vel = createVector();
         this.acc = createVector();
         this.angle = 0;
         this.aVel = 0;
         this.aAcc = 0;
+        this.static = immobile;
+        this.swordPrev = p5.Vector.fromAngle(this.angle);
+        this.swordPrev.mult(Player.SWORD_LEN + Player.R);
+        this.swordPrev.add(this.pos);
+    }
 
-        Player.SWORD_LEN = 60;
-        Player.R = 40;
+    applyForce(force) {
+        this.acc.add(force);
     }
 
     update() {
-        this._handleKeys();
-        this._updateSword();
+        this.swordPrev = p5.Vector.fromAngle(this.angle);
+        this.swordPrev.mult(Player.SWORD_LEN + Player.R);
+        this.swordPrev.add(this.pos);
+        if (!this.static) {
+            this._handleKeys();
+            this._updateSword();
+        }
 
         this.vel.add(this.acc);
         this.vel.limit(5);
@@ -34,6 +46,20 @@ class Player {
         fill(201);
         stroke(0);
         ellipse(this.pos.x, this.pos.y, Player.R);
+    }
+
+    swordHit(enemy) {
+        let mySword = p5.Vector.fromAngle(this.angle);
+        mySword.mult(Player.SWORD_LEN + Player.R);
+        mySword.add(this.pos);
+
+        let theirSword = p5.Vector.fromAngle(enemy.angle);
+        theirSword.mult(Player.SWORD_LEN + Player.R);
+        theirSword.add(enemy.pos);
+
+        return lineSegmentIntersection(this.swordPrev, mySword, enemy.pos, theirSword) ||
+            lineSegmentIntersection(this.pos, mySword, enemy.swordPrev, theirSword) ||
+            lineSegmentIntersection(this.pos, mySword, enemy.pos, theirSword);
     }
 
     _handleKeys() {
@@ -56,13 +82,13 @@ class Player {
         let relativeMouse = createVector(mouseX, mouseY);
         relativeMouse.sub(this.pos);
         let desired = atan2(relativeMouse.y, relativeMouse.x) + TAU;
-        
+
         if (abs(desired - this.angle) < abs(desired - (this.angle + TAU))) {
             desired -= this.angle;
         } else {
             desired -= this.angle + TAU;
         }
-        
+
         desired = constrain(desired, -0.1, 0.1); // max speed
 
         let steer = desired - this.aVel;
