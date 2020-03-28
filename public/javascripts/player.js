@@ -53,20 +53,21 @@ class Player {
         mySword.mult(Player.SWORD_LEN + Player.R);
         mySword.add(this.pos);
 
+        let enemyPos = createVector(enemy.x, enemy.y);
         let theirSword = p5.Vector.fromAngle(enemy.angle);
         theirSword.mult(Player.SWORD_LEN + Player.R);
-        theirSword.add(enemy.pos);
+        theirSword.add(enemyPos);
 
-        return lineSegmentIntersection(this.swordPrev, mySword, enemy.pos, theirSword) ||
-            lineSegmentIntersection(this.pos, mySword, enemy.swordPrev, theirSword) ||
-            lineSegmentIntersection(this.pos, mySword, enemy.pos, theirSword);
+        return lineSegmentIntersection(this.swordPrev, mySword, enemyPos, theirSword) ||
+            lineSegmentIntersection(this.pos, mySword, enemyPos, theirSword);
     }
 
     swordHitMe(enemy) {
+        let enemyPos = createVector(enemy.x, enemy.y);
         let theirSword = p5.Vector.fromAngle(enemy.angle);
         theirSword.mult(Player.SWORD_LEN + Player.R);
-        theirSword.add(enemy.pos);
-        return lineSegmentCircleIntersection(theirSword, enemy.pos, this.pos, Player.R);
+        theirSword.add(enemyPos);
+        return lineSegmentCircleIntersection(theirSword, enemyPos, this.pos, Player.R);
     }
 
     _handleKeys() {
