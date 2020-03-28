@@ -27,12 +27,17 @@ class Player {
         }
         let relativeMouse = createVector(mouseX, mouseY);
         relativeMouse.sub(this.pos);
-        let desired = atan2(relativeMouse.y, relativeMouse.x) - this.angle;
+        let desired = atan2(relativeMouse.y, relativeMouse.x);
+        if (abs(desired - this.angle) < abs(desired - (this.angle + TAU))) {
+            desired -= this.angle;
+        } else {
+            desired -= this.angle + TAU;
+        }
 
-        desired = constrain(desired, -0.1, 0.1);
+        desired = constrain(desired, -0.1, 0.1); // max speed
 
         let steer = desired - this.aVel;
-        steer = constrain(steer, -0.01, 0.01);
+        steer = constrain(steer, -0.01, 0.01); // max angular force
 
         this.aAcc += steer;
 
