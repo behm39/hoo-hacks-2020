@@ -13,6 +13,24 @@ class Player {
     }
 
     update() {
+        this._handleKeys();
+        this._updateSword();
+    }
+
+    draw() {
+        stroke(255);
+        strokeWeight(4);
+        let sword = p5.Vector.fromAngle(this.angle);
+        sword.mult(Player.SWORD_LEN + Player.R);
+        sword.add(this.pos);
+        line(this.pos.x, this.pos.y, sword.x, sword.y);
+
+        fill(201);
+        stroke(0);
+        ellipse(this.pos.x, this.pos.y, Player.R);
+    }
+
+    _handleKeys() {
         if (keyIsDown('W'.charCodeAt(0))) {
             this.pos.y += -2;
         }
@@ -25,6 +43,9 @@ class Player {
         if (keyIsDown('D'.charCodeAt(0))) {
             this.pos.x += 2;
         }
+    }
+
+    _updateSword() {
         let relativeMouse = createVector(mouseX, mouseY);
         relativeMouse.sub(this.pos);
         let desired = atan2(relativeMouse.y, relativeMouse.x);
@@ -44,20 +65,6 @@ class Player {
         this.aVel += this.aAcc;
         this.angle += this.aVel;
         this.aAcc = 0;
-
-    }
-
-    draw() {
-        stroke(255);
-        strokeWeight(4);
-        let sword = p5.Vector.fromAngle(this.angle);
-        sword.mult(Player.SWORD_LEN + Player.R);
-        sword.add(this.pos);
-        line(this.pos.x, this.pos.y, sword.x, sword.y);
-
-        fill(201);
-        stroke(0);
-        ellipse(this.pos.x, this.pos.y, Player.R);
     }
 
 }
