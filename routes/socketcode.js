@@ -3,6 +3,9 @@ function Player(id, x, y, angle) {
     this.x = x;
     this.y = y;
     this.angle = angle;
+    this.dx = 0;
+    this.dy = 0;
+    this.da = 0;
 }
 
 function setupSocketIO(io) {
@@ -11,7 +14,7 @@ function setupSocketIO(io) {
         console.log('user connected');
 
         /**
-         * data: (x, y, angle)
+         * data: (x, y, angle, dx, dy, da)
          */
         socket.on('start', (data) => {
             console.log(`player started: ${data}`);
@@ -24,6 +27,9 @@ function setupSocketIO(io) {
                     players[i].x = data.x;
                     players[i].y = data.y;
                     players[i].angle = data.angle;
+                    players[i].dx = data.dx;
+                    players[i].dy = data.dy;
+                    players[i].da = data.da;
                 }
             }
         });
@@ -41,7 +47,7 @@ function setupSocketIO(io) {
 
     setInterval(() => {
         io.sockets.emit('heartbeat', players);
-    }, 33);
+    }, 32);
 }
 
 

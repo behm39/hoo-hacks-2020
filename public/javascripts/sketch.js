@@ -32,7 +32,21 @@ function update() {
     checkSwordCollision();
     checkDamageCollision();
     player.update();
-    socket.emit('update', { x: player.pos.x, y: player.pos.y, angle: player.angle });
+    for (let i = 0; i < others.length; i++) {
+        if (others[i].id != socket.id) {
+            others[i].x += others[i].dx;
+            others[i].y += others[i].dy;
+            others[i].angle += others[i].da;
+        }
+    }
+    socket.emit('update', {
+        x: player.pos.x,
+        y: player.pos.y,
+        angle: player.angle,
+        dx: player.vel.x,
+        dy: player.vel.y,
+        da: player.aVel
+    });
 }
 
 function render() {
