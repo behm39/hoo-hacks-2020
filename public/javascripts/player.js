@@ -92,7 +92,7 @@ class Player {
         desired = constrain(desired, -0.1, 0.1); // max speed
 
         let steer = desired - this.aVel;
-        steer = constrain(steer, -0.01, 0.01); // max angular force
+        steer = constrain(steer, -0.005, 0.005); // max angular force
 
         this.aAcc += steer;
 
