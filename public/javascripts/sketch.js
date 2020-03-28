@@ -17,5 +17,6 @@ function update() {
 function render() {
     background(201);
 
+    // line(player.pos.x, player.pos.y, mouseX, mouseY);
     player.draw();
 }

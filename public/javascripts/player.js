@@ -15,6 +15,12 @@ class Player {
     update() {
         this._handleKeys();
         this._updateSword();
+
+        this.vel.add(this.acc);
+        this.vel.limit(5);
+        this.pos.add(this.vel);
+        this.acc.mult(0);
+        this.vel.mult(0.9);
     }
 
     draw() {
@@ -31,30 +37,32 @@ class Player {
     }
 
     _handleKeys() {
+        const MOVE_FORCE = 0.25;
         if (keyIsDown('W'.charCodeAt(0))) {
-            this.pos.y += -2;
+            this.acc.add(createVector(0, -MOVE_FORCE));
         }
         if (keyIsDown('A'.charCodeAt(0))) {
-            this.pos.x += -2;
+            this.acc.add(createVector(-MOVE_FORCE, 0));
         }
         if (keyIsDown('S'.charCodeAt(0))) {
-            this.pos.y += 2;
+            this.acc.add(createVector(0, MOVE_FORCE));
         }
         if (keyIsDown('D'.charCodeAt(0))) {
-            this.pos.x += 2;
+            this.acc.add(createVector(MOVE_FORCE, 0));
         }
     }
 
     _updateSword() {
         let relativeMouse = createVector(mouseX, mouseY);
         relativeMouse.sub(this.pos);
-        let desired = atan2(relativeMouse.y, relativeMouse.x);
+        let desired = atan2(relativeMouse.y, relativeMouse.x) + TAU;
+        
         if (abs(desired - this.angle) < abs(desired - (this.angle + TAU))) {
             desired -= this.angle;
         } else {
             desired -= this.angle + TAU;
         }
-
+        
         desired = constrain(desired, -0.1, 0.1); // max speed
 
         let steer = desired - this.aVel;
@@ -64,6 +72,12 @@ class Player {
 
         this.aVel += this.aAcc;
         this.angle += this.aVel;
+        while (this.angle < 0) {
+            this.angle += TAU;
+        }
+        while (this.angle > TAU) {
+            this.angle -= TAU;
+        }
         this.aAcc = 0;
     }
 
