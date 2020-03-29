@@ -95,6 +95,7 @@ function render() {
         player.drawArrowPointedAt(others[closestIndex]);
     }
     Player.Draw(player.angle, player.pos.x, player.pos.y, player.health);
+    player.drawVelocityBar();
 }
 
 function checkSwordCollision() {

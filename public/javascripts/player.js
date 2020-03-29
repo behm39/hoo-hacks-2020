@@ -52,6 +52,7 @@ class Player {
         push();
         translate(x, y);
 
+        strokeWeight(2);
         fill(255, 0, 0);
         const HEALTH_W = 60;
         const HEALTH_Y_BUFFER = 20;
@@ -71,6 +72,29 @@ class Player {
         fill(201);
         stroke(0);
         ellipse(0, 0, Player.R * 2);
+        pop();
+    }
+
+    drawVelocityBar() {
+        push();
+        translate(this.pos.x, this.pos.y);
+
+        strokeWeight(2);
+        fill(201);
+        const BAR_W = 60;
+        const BAR_Y_BUFFER = 12;
+        rect(-BAR_W / 2, -Player.R - BAR_Y_BUFFER, BAR_W, 8);
+
+        let sword = p5.Vector.fromAngle(this.angle);
+        sword.mult(Player.SWORD_LEN + Player.R);
+        sword.add(this.pos);
+        let swordVel = p5.Vector.sub(sword, this.swordPrev);
+
+        fill(0, 0, 255);
+        let barWidth = map(swordVel.mag(), 0, 15, 0, BAR_W);
+        barWidth = constrain(barWidth, 0, BAR_W);
+        rect(-BAR_W / 2, -Player.R - BAR_Y_BUFFER, barWidth, 8);
+
         pop();
     }
 
