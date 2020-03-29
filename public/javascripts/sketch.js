@@ -5,6 +5,9 @@ let p;
 let swordClings;
 let socket;
 
+const EDGE_X = 1000;
+const EDGE_Y = 1000;
+
 function preload() {
     soundFormats('mp3', 'ogg', 'wav');
     swordClings = [];
@@ -16,7 +19,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600);
-    player = new Player(random(-1000), random(1000));
+    player = new Player(random(EDGE_X), random(EDGE_Y));
     others = [];
     socket.emit('start', { x: player.pos.x, y: player.pos.y, angle: player.angle });
     socket.on('heartbeat', (data) => {
@@ -55,8 +58,17 @@ function update() {
 function render() {
     background(201);
 
+    stroke(0);
+    strokeWeight(4);
+   
+
     translate(width / 2, height / 2);
     translate(-player.pos.x, -player.pos.y);
+
+    line(-EDGE_X, -EDGE_Y, EDGE_X, -EDGE_Y);
+    line(EDGE_X, -EDGE_Y, EDGE_X, EDGE_Y);
+    line(EDGE_X, EDGE_Y, -EDGE_X, EDGE_Y);
+    line(-EDGE_X, EDGE_Y, -EDGE_X, -EDGE_Y);
 
     // line(player.pos.x, player.pos.y, mouseX, mouseY);
 
@@ -94,7 +106,7 @@ function checkSwordCollision() {
 function checkDamageCollision() {
     for (let i = 0; i < others.length; i++) {
         if (others[i].id != socket.id) {
-            if (player.immunityFrames <= 0 && player.swordHitMe(others[i])) {
+            if (player.swordHitMe(others[i])) {
                 handleDamageCollision(others[i]);
             }
         }
@@ -103,7 +115,10 @@ function checkDamageCollision() {
 
 function handleSwordCollision(enemy) {
     let enemyPos = createVector(enemy.x, enemy.y);
-    swordClings[floor(random(swordClings.length))].play();
+    if (player.soundTimer < 0) {
+        swordClings[floor(random(swordClings.length))].play();
+        player.soundTimer = 30;
+    }
     let bounce = p5.Vector.sub(enemyPos, player.pos);
     bounce.normalize();
 
@@ -125,11 +140,13 @@ function handleDamageCollision(enemy) {
     // enemy.applyForce(bounce);
     bounce.mult(-1);
     player.applyForce(bounce);
-    player.health -= 0.35;
-    player.immunityFrames = 30;
 
-    if (player.health < 0) {
-        handleDeath();
+    if (player.immunityFrames < 0) {
+        player.health -= 0.35;
+        player.immunityFrames = 30;
+        if (player.health < 0) {
+            handleDeath();
+        }
     }
 }
 

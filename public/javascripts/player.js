@@ -15,6 +15,7 @@ class Player {
         this.swordPrev.add(this.pos);
         this.health = 1;
         this.immunityFrames = 0;
+        this.soundTimer = 0;
     }
 
     applyForce(force) {
@@ -35,10 +36,17 @@ class Player {
         this.pos.add(this.vel);
         this.acc.mult(0);
         this.vel.mult(0.9);
+        this._handleEdges();
         this.immunityFrames -= 1;
+        this.soundTimer -= 1;
 
         p.html(`Position: (${Math.trunc(this.pos.x / 10)}, ${Math.trunc(this.pos.y / 10)})`);
     }
+
+    _handleEdges() {
+        this.pos.x = constrain(this.pos.x, -EDGE_X, EDGE_X);
+        this.pos.y = constrain(this.pos.y, -EDGE_Y, EDGE_Y);
+    }   
 
     static Draw(angle, x, y, health) {
         push();
