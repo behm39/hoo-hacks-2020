@@ -40,7 +40,7 @@ class Player {
         this.immunityFrames -= 1;
         this.soundTimer -= 1;
 
-        p.html(`Position: (${Math.trunc(this.pos.x / 10)}, ${Math.trunc(this.pos.y / 10)})`);
+        // p.html(`Position: (${Math.trunc(this.pos.x / 10)}, ${Math.trunc(this.pos.y / 10)})`);
     }
 
     _handleEdges() {
@@ -110,11 +110,13 @@ class Player {
         mySword.add(this.pos);
 
         let enemyPos = createVector(enemy.x, enemy.y);
+        let theirSwordPrev = createVector(enemy.swordPrevX, enemy.swordPrevY);
         let theirSword = p5.Vector.fromAngle(enemy.angle);
         theirSword.mult(Player.SWORD_LEN + Player.R);
         theirSword.add(enemyPos);
 
         return lineSegmentIntersection(this.swordPrev, mySword, enemyPos, theirSword) ||
+            lineSegmentIntersection(theirSwordPrev, theirSword, this.pos, mySword) ||
             lineSegmentIntersection(this.pos, mySword, enemyPos, theirSword);
     }
 
@@ -153,7 +155,7 @@ class Player {
             desired -= this.angle + TAU;
         }
 
-        desired = constrain(desired, -0.1, 0.1); // max speed
+        desired = constrain(desired, -0.15, 0.15); // max speed
 
         let steer = desired - this.aVel;
         steer = constrain(steer, -0.005, 0.005); // max angular force

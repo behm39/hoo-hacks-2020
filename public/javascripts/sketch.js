@@ -3,6 +3,7 @@ let others;
 let p;
 
 let swordClings;
+let hurt;
 let socket;
 
 const EDGE_X = 1000;
@@ -13,6 +14,7 @@ function preload() {
     swordClings = [];
     swordClings.push(loadSound('public/sounds/sword-cling-1.wav'));
     swordClings.push(loadSound('public/sounds/sword-cling-2.wav'));
+    hurt = loadSound('public/sounds/hurt.mp3');
 
     socket = io();
 }
@@ -51,7 +53,9 @@ function update() {
         dx: player.vel.x,
         dy: player.vel.y,
         da: player.aVel,
-        health: player.health
+        health: player.health,
+        swordPrevX: player.swordPrev.x,
+        swordPrevY: player.swordPrev.y
     });
 }
 
@@ -60,7 +64,7 @@ function render() {
 
     stroke(0);
     strokeWeight(4);
-   
+
 
     translate(width / 2, height / 2);
     translate(-player.pos.x, -player.pos.y);
@@ -122,16 +126,20 @@ function handleSwordCollision(enemy) {
     let bounce = p5.Vector.sub(enemyPos, player.pos);
     bounce.normalize();
 
-    let bounceMag = abs(player.aVel); // TODO: include enemy.aVel too
+    let theirSwordPrev = createVector(enemy.swordPrevX, enemy.swordPrevY);
+    let theirSword = p5.Vector.fromAngle(enemy.angle);
+    theirSword.mult(Player.SWORD_LEN + Player.R);
+    theirSword.add(enemyPos);
+    let theirSwordVel = p5.Vector.sub(theirSword, theirSwordPrev);
+
+    let bounceMag = abs(player.aVel) + theirSwordVel.mag();
 
     bounce.mult(5 + bounceMag * 30); // tweak bounce mag
-    // enemy.applyForce(bounce);
     bounce.mult(-1);
     player.applyForce(bounce);
 }
 
 function handleDamageCollision(enemy) {
-    // TODO: play hurt sound
     let enemyPos = createVector(enemy.x, enemy.y);
     let bounce = p5.Vector.sub(enemyPos, player.pos);
     bounce.normalize();
@@ -141,8 +149,19 @@ function handleDamageCollision(enemy) {
     bounce.mult(-1);
     player.applyForce(bounce);
 
+    let theirSwordPrev = createVector(enemy.swordPrevX, enemy.swordPrevY);
+    let theirSword = p5.Vector.fromAngle(enemy.angle);
+    theirSword.mult(Player.SWORD_LEN + Player.R);
+    theirSword.add(enemyPos);
+    let theirSwordVel = p5.Vector.sub(theirSword, theirSwordPrev);
+
+    p.html('theirSwordVel: ' + theirSwordVel.mag());
+
     if (player.immunityFrames < 0) {
-        player.health -= 0.35;
+        hurt.play();
+        let hurtAmt = map(theirSwordVel.mag(), 5, 25, 0.05, 0.60);
+        hurtAmt = constrain(hurtAmt, 0.05, 0.60);
+        player.health -= hurtAmt;
         player.immunityFrames = 30;
         if (player.health < 0) {
             handleDeath();

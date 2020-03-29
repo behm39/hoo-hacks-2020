@@ -7,6 +7,8 @@ function Player(id, x, y, angle) {
     this.dy = 0;
     this.da = 0;
     this.health = 1;
+    this.swordPrevX = x;
+    this.swordPrevY = y;
 }
 
 function setupSocketIO(io) {
@@ -32,6 +34,8 @@ function setupSocketIO(io) {
                     players[i].dy = data.dy;
                     players[i].da = data.da;
                     players[i].health = data.health;
+                    players[i].swordPrevX = data.swordPrevX;
+                    players[i].swordPrevY = data.swordPrevY;
                 }
             }
         });
