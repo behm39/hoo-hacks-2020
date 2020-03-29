@@ -16,7 +16,7 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600);
-    player = new Player(random(width), random(height));
+    player = new Player(random(-1000), random(1000));
     others = [];
     socket.emit('start', { x: player.pos.x, y: player.pos.y, angle: player.angle });
     socket.on('heartbeat', (data) => {
@@ -59,12 +59,26 @@ function render() {
     translate(-player.pos.x, -player.pos.y);
 
     // line(player.pos.x, player.pos.y, mouseX, mouseY);
-    Player.Draw(player.angle, player.pos.x, player.pos.y, player.health);
+
+
+    let closestDistSq = Infinity;
+    let closestIndex = 0;
     for (let i = 0; i < others.length; i++) {
         if (others[i].id != socket.id) {
+            let dx = others[i].x - player.pos.x;
+            let dy = others[i].y - player.pos.y;
+            let dsq = dx * dx + dy * dy
+            if (dsq < closestDistSq) {
+                closestDistSq = dsq;
+                closestIndex = i;
+            }
             Player.Draw(others[i].angle, others[i].x, others[i].y, others[i].health); // TODO: other health
         }
     }
+    if (others.length > 1 && closestDistSq > (width / 2) * (width / 2)) {
+        player.drawArrowPointedAt(others[closestIndex]);
+    }
+    Player.Draw(player.angle, player.pos.x, player.pos.y, player.health);
 }
 
 function checkSwordCollision() {

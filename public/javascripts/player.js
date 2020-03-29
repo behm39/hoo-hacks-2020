@@ -36,6 +36,8 @@ class Player {
         this.acc.mult(0);
         this.vel.mult(0.9);
         this.immunityFrames -= 1;
+
+        p.html(`Position: (${Math.trunc(this.pos.x / 10)}, ${Math.trunc(this.pos.y / 10)})`);
     }
 
     static Draw(angle, x, y, health) {
@@ -61,6 +63,36 @@ class Player {
         fill(201);
         stroke(0);
         ellipse(0, 0, Player.R * 2);
+        pop();
+    }
+
+    drawArrowPointedAt(enemy) {
+        push();
+        translate(this.pos.x, this.pos.y);
+
+        console.log(enemy);
+        
+        let dx = enemy.x - this.pos.x;
+        let dy = enemy.y - this.pos.y;
+        let dirToEnemy = createVector(dx, dy);
+        dirToEnemy.normalize();
+        
+
+        dirToEnemy.mult(100);
+        stroke(255, 0, 0);
+        strokeWeight(4);
+
+        const ARROW_ANGLE = PI / 8;
+
+        rotate(dirToEnemy.heading());
+        line(0, 0, dirToEnemy.mag(), 0); // stalk of arrow
+        translate(dirToEnemy.mag(), 0); // translate to tip of stalk
+        push();
+        rotate(PI - ARROW_ANGLE);
+        line(0, 0, 20, 0);
+        pop();
+        rotate(PI + ARROW_ANGLE);
+        line(0, 0, 20, 0);
         pop();
     }
 
@@ -104,7 +136,6 @@ class Player {
 
     _updateSword() {
         let relativeMouse = createVector(mouseX - width / 2, mouseY - height / 2);
-        p.html(mouseX + ', ' + mouseY);
         // relativeMouse.sub(this.pos);
         let desired = atan2(relativeMouse.y, relativeMouse.x) + TAU;
 
