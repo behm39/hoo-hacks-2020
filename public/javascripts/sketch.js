@@ -13,6 +13,9 @@ function preload() {
     soundFormats('mp3', 'ogg', 'wav');
     swordClings = [];
     swordClings.push(loadSound('public/sounds/sword-cling-1.mp3'));
+    swordClings.push(loadSound('public/sounds/sword-cling-2.mp3'));
+    swordClings.push(loadSound('public/sounds/sword-cling-3.mp3'));
+    swordClings.push(loadSound('public/sounds/sword-cling-4.mp3'));
     hurtSounds = [];
     hurtSounds.push(loadSound('public/sounds/hurt-1.wav'));
     hurtSounds.push(loadSound('public/sounds/hurt-2.wav'));

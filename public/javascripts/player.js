@@ -102,8 +102,6 @@ class Player {
         push();
         translate(this.pos.x, this.pos.y);
 
-        console.log(enemy);
-        
         let dx = enemy.x - this.pos.x;
         let dy = enemy.y - this.pos.y;
         let dirToEnemy = createVector(dx, dy);
