@@ -1,5 +1,6 @@
 let player;
 let others;
+let p;
 
 let swordClings;
 let socket;
@@ -21,6 +22,7 @@ function setup() {
     socket.on('heartbeat', (data) => {
         others = data;
     });
+    p = createElement('p');
 }
 
 function draw() {
@@ -52,6 +54,9 @@ function update() {
 
 function render() {
     background(201);
+
+    translate(width / 2, height / 2);
+    translate(-player.pos.x, -player.pos.y);
 
     // line(player.pos.x, player.pos.y, mouseX, mouseY);
     Player.Draw(player.angle, player.pos.x, player.pos.y, player.health);

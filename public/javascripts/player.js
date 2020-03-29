@@ -103,8 +103,9 @@ class Player {
     }
 
     _updateSword() {
-        let relativeMouse = createVector(mouseX, mouseY);
-        relativeMouse.sub(this.pos);
+        let relativeMouse = createVector(mouseX - width / 2, mouseY - height / 2);
+        p.html(mouseX + ', ' + mouseY);
+        // relativeMouse.sub(this.pos);
         let desired = atan2(relativeMouse.y, relativeMouse.x) + TAU;
 
         if (abs(desired - this.angle) < abs(desired - (this.angle + TAU))) {
