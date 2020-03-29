@@ -3,7 +3,7 @@ let others;
 let p;
 
 let swordClings;
-let hurt;
+let hurtSounds;
 let socket;
 
 const EDGE_X = 1000;
@@ -12,9 +12,10 @@ const EDGE_Y = 1000;
 function preload() {
     soundFormats('mp3', 'ogg', 'wav');
     swordClings = [];
-    swordClings.push(loadSound('public/sounds/sword-cling-1.wav'));
-    swordClings.push(loadSound('public/sounds/sword-cling-2.wav'));
-    hurt = loadSound('public/sounds/hurt.mp3');
+    swordClings.push(loadSound('public/sounds/sword-cling-1.mp3'));
+    hurtSounds = [];
+    hurtSounds.push(loadSound('public/sounds/hurt-1.wav'));
+    hurtSounds.push(loadSound('public/sounds/hurt-2.wav'));
 
     socket = io();
 }
@@ -159,7 +160,7 @@ function handleDamageCollision(enemy) {
     p.html('theirSwordVel: ' + theirSwordVel.mag());
 
     if (player.immunityFrames < 0) {
-        hurt.play();
+        hurtSounds[floor(random(hurtSounds.length))].play();
         let hurtAmt = map(theirSwordVel.mag(), 5, 25, 0.05, 0.60);
         hurtAmt = constrain(hurtAmt, 0.05, 0.60);
         player.health -= hurtAmt;
