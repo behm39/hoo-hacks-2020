@@ -193,6 +193,7 @@ class Player {
             this.angle -= TAU;
         }
         this.aAcc = 0;
+        this.aVel *= 0.98
     }
 
 }
