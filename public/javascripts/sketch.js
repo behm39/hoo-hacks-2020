@@ -2,6 +2,8 @@ let player;
 let others;
 let p;
 
+let trees;
+
 let swordClings;
 let hurtSounds;
 let socket;
@@ -25,12 +27,19 @@ function preload() {
 
 function setup() {
     createCanvas(600, 600);
-    player = new Player(random(EDGE_X), random(EDGE_Y));
+    player = new Player(random(-EDGE_X, EDGE_X), random(-EDGE_Y, EDGE_Y));
     others = [];
     socket.emit('start', { x: player.pos.x, y: player.pos.y, angle: player.angle });
     socket.on('heartbeat', (data) => {
         others = data;
     });
+    trees = [];
+    for (let i = 0; i < 100; i++) {
+        trees.push({
+            pos: createVector(random(-EDGE_X, EDGE_X), random(-EDGE_Y, EDGE_Y)),
+            size: random(32, 64)
+        });
+    }
     p = createElement('p');
 }
 
@@ -40,9 +49,9 @@ function draw() {
 }
 
 function update() {
+    player.update();
     checkSwordCollision();
     checkDamageCollision();
-    player.update();
     for (let i = 0; i < others.length; i++) {
         if (others[i].id != socket.id) {
             others[i].x += others[i].dx;
@@ -64,11 +73,10 @@ function update() {
 }
 
 function render() {
-    background(201);
+    background(71, 143, 76);
 
     stroke(0);
     strokeWeight(4);
-
 
     translate(width / 2, height / 2);
     translate(-player.pos.x, -player.pos.y);
@@ -100,6 +108,14 @@ function render() {
     }
     Player.Draw(player.angle, player.pos.x, player.pos.y, player.health);
     player.drawVelocityBar();
+    drawTrees();
+}
+
+function drawTrees() {
+    fill(35, 74, 37);
+    for (let i = 0; i < trees.length; i++) {
+        ellipse(trees[i].pos.x, trees[i].pos.y, trees[i].size, trees[i].size);
+    }
 }
 
 function checkSwordCollision() {
@@ -159,8 +175,6 @@ function handleDamageCollision(enemy) {
     theirSword.mult(Player.SWORD_LEN + Player.R);
     theirSword.add(enemyPos);
     let theirSwordVel = p5.Vector.sub(theirSword, theirSwordPrev);
-
-    p.html('theirSwordVel: ' + theirSwordVel.mag());
 
     if (player.immunityFrames < 0) {
         hurtSounds[floor(random(hurtSounds.length))].play();

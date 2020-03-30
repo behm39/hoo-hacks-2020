@@ -69,7 +69,7 @@ class Player {
         sword.mult(Player.SWORD_LEN + Player.R);
         line(0, 0, sword.x, sword.y);
 
-        fill(201);
+        fill(255);
         stroke(0);
         ellipse(0, 0, Player.R * 2);
         pop();
